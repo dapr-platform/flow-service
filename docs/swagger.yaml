@@ -1,0 +1,2057 @@
+basePath: /swagger/flow-service
+definitions:
+  controllers.APIResponse:
+    properties:
+      data: {}
+      msg:
+        example: 操作成功
+        type: string
+      status:
+        example: 0
+        type: integer
+    type: object
+  controllers.NodeFullInfo:
+    properties:
+      author:
+        type: string
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        description: 基础信息
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/nodes.NodeMetadata'
+        description: 完整元数据
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+      updated_at:
+        type: string
+      version:
+        type: string
+    type: object
+  controllers.NodesListResponse:
+    properties:
+      categories_info:
+        items:
+          $ref: '#/definitions/nodes.CategoryInfo'
+        type: array
+      nodes:
+        items:
+          $ref: '#/definitions/controllers.NodeFullInfo'
+        type: array
+      pagination:
+        $ref: '#/definitions/controllers.PaginationInfo'
+      types_info:
+        items:
+          $ref: '#/definitions/nodes.TypeInfo'
+        type: array
+    type: object
+  controllers.PaginatedResponse:
+    properties:
+      data: {}
+      msg:
+        example: 操作成功
+        type: string
+      page:
+        example: 1
+        type: integer
+      size:
+        example: 10
+        type: integer
+      status:
+        example: 0
+        type: integer
+      total:
+        example: 100
+        type: integer
+    type: object
+  controllers.PaginationInfo:
+    properties:
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  controllers.ProgressResponse:
+    properties:
+      execution_id:
+        type: string
+      progress:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  controllers.TriggerExecutionRequest:
+    properties:
+      description:
+        type: string
+      input:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      priority:
+        type: integer
+      trigger_by:
+        type: string
+      variables:
+        additionalProperties: true
+        type: object
+    type: object
+  controllers.ValidationResult:
+    properties:
+      config:
+        additionalProperties: true
+        type: object
+      error:
+        type: string
+      node_id:
+        type: string
+      valid:
+        type: boolean
+    type: object
+  models.ConditionConfig:
+    properties:
+      default_branch:
+        description: 默认分支
+        type: string
+      expression:
+        description: 条件表达式
+        type: string
+      false_branch:
+        description: 假分支
+        type: string
+      true_branch:
+        description: 真分支
+        type: string
+      type:
+        description: 条件类型
+        enum:
+        - javascript
+        - python
+        - go
+        type: string
+    required:
+    - expression
+    type: object
+  models.Edge:
+    properties:
+      config:
+        allOf:
+        - $ref: '#/definitions/models.EdgeConfig'
+        description: 配置字段
+      description:
+        type: string
+      execution:
+        allOf:
+        - $ref: '#/definitions/models.EdgeExecution'
+        description: 执行信息
+      from_node_id:
+        description: 连接字段
+        type: string
+      id:
+        description: 基础字段
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/models.EdgeStatusEnum'
+      to_node_id:
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/models.EdgeTypeEnum'
+        description: 类型和状态
+      ui_config:
+        additionalProperties: true
+        type: object
+    required:
+    - from_node_id
+    - id
+    - to_node_id
+    - type
+    type: object
+  models.EdgeCondition:
+    properties:
+      default_value:
+        description: 默认值
+        type: boolean
+      enabled:
+        description: 是否启用
+        type: boolean
+      expression:
+        description: 条件表达式
+        type: string
+      parameters:
+        additionalProperties: true
+        description: 条件参数
+        type: object
+      timeout:
+        description: '超时时间 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+      type:
+        description: 条件类型
+        enum:
+        - javascript
+        - python
+        - go
+        - simple
+        type: string
+    required:
+    - expression
+    type: object
+  models.EdgeConfig:
+    properties:
+      condition:
+        allOf:
+        - $ref: '#/definitions/models.EdgeCondition'
+        description: 条件配置
+      data_mapping:
+        allOf:
+        - $ref: '#/definitions/models.EdgeDataMapping'
+        description: 数据映射配置
+      delay:
+        description: '延迟执行时间 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+      description:
+        description: 描述
+        type: string
+      enabled:
+        description: 是否启用
+        type: boolean
+      priority:
+        description: 优先级
+        maximum: 10
+        minimum: 0
+        type: integer
+      retry_config:
+        allOf:
+        - $ref: '#/definitions/models.EdgeRetryConfig'
+        description: 重试配置
+      tags:
+        description: 标签
+        items:
+          type: string
+        type: array
+      weight:
+        description: 权重（用于负载均衡）
+        maximum: 100
+        minimum: 1
+        type: integer
+    type: object
+  models.EdgeDataMapping:
+    properties:
+      filter_rules:
+        description: 数据过滤规则
+        items:
+          $ref: '#/definitions/models.FilterRule'
+        type: array
+      pass_through:
+        description: 是否传递所有数据
+        type: boolean
+      source_mapping:
+        additionalProperties:
+          type: string
+        description: 源字段映射
+        type: object
+      target_mapping:
+        additionalProperties:
+          type: string
+        description: 目标字段映射
+        type: object
+      transform_rules:
+        description: 数据转换规则
+        items:
+          $ref: '#/definitions/models.TransformRule'
+        type: array
+    type: object
+  models.EdgeExecution:
+    properties:
+      average_execution_time:
+        description: '平均执行时间 (单位: 纳秒)'
+        type: integer
+      execution_count:
+        description: 执行次数
+        type: integer
+      execution_id:
+        description: 执行ID
+        type: string
+      failure_count:
+        description: 失败次数
+        type: integer
+      last_error:
+        description: 最后错误信息
+        type: string
+      last_execution_time:
+        description: 最后执行时间
+        type: string
+      last_failure_time:
+        description: 最后失败时间
+        type: string
+      last_success_time:
+        description: 最后成功时间
+        type: string
+      success_count:
+        description: 成功次数
+        type: integer
+    type: object
+  models.EdgeRetryConfig:
+    properties:
+      backoff_strategy:
+        description: 退避策略
+        enum:
+        - fixed
+        - linear
+        - exponential
+        type: string
+      max_retries:
+        description: 最大重试次数
+        maximum: 5
+        minimum: 0
+        type: integer
+      retry_conditions:
+        description: 重试条件
+        items:
+          type: string
+        type: array
+      retry_interval:
+        description: '重试间隔 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+    type: object
+  models.EdgeStatusEnum:
+    enum:
+    - active
+    - inactive
+    - disabled
+    type: string
+    x-enum-varnames:
+    - EdgeStatusActive
+    - EdgeStatusInactive
+    - EdgeStatusDisabled
+  models.EdgeTypeEnum:
+    enum:
+    - normal
+    - conditional
+    - loop
+    - error
+    - timeout
+    - skip
+    type: string
+    x-enum-varnames:
+    - EdgeTypeNormal
+    - EdgeTypeConditional
+    - EdgeTypeLoop
+    - EdgeTypeError
+    - EdgeTypeTimeout
+    - EdgeTypeSkip
+  models.Execution:
+    properties:
+      completed_at:
+        type: string
+      context:
+        $ref: '#/definitions/models.ExecutionContext'
+      created_at:
+        description: 创建信息
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      error_code:
+        type: string
+      error_msg:
+        description: 错误信息
+        type: string
+      id:
+        description: 基础字段
+        type: string
+      max_retries:
+        type: integer
+      metrics:
+        $ref: '#/definitions/models.ExecutionMetrics'
+      name:
+        description: 执行信息
+        type: string
+      nodes:
+        items:
+          $ref: '#/definitions/models.ExecutionNodeRecord'
+        type: array
+      priority:
+        description: 优先级和标签
+        type: integer
+      retry_count:
+        description: 重试信息
+        type: integer
+      retry_strategy:
+        type: string
+      scheduled_at:
+        description: 时间信息
+        type: string
+      stack_trace:
+        type: string
+      started_at:
+        type: string
+      status:
+        $ref: '#/definitions/models.ExecutionStatus'
+      tags:
+        items:
+          type: string
+        type: array
+      trigger:
+        additionalProperties: true
+        type: object
+      trigger_by:
+        type: string
+      trigger_type:
+        allOf:
+        - $ref: '#/definitions/models.TriggerType'
+        description: 触发信息
+      updated_at:
+        type: string
+      workflow:
+        allOf:
+        - $ref: '#/definitions/models.Workflow'
+        description: 关联关系
+      workflow_id:
+        type: string
+      workflow_version:
+        type: string
+    type: object
+  models.ExecutionContext:
+    properties:
+      environment:
+        additionalProperties:
+          type: string
+        description: 执行环境
+        type: object
+      input:
+        additionalProperties: true
+        description: 输入参数
+        type: object
+      output:
+        additionalProperties: true
+        description: 输出结果
+        type: object
+      variables:
+        additionalProperties: true
+        description: 执行变量
+        type: object
+    type: object
+  models.ExecutionMetrics:
+    properties:
+      completed_nodes:
+        type: integer
+      execution_time:
+        type: integer
+      failed_nodes:
+        type: integer
+      queue_time:
+        type: integer
+      skipped_nodes:
+        type: integer
+      total_nodes:
+        type: integer
+      wait_time:
+        type: integer
+    type: object
+  models.ExecutionNodeRecord:
+    properties:
+      duration:
+        type: integer
+      end_time:
+        type: string
+      error_msg:
+        type: string
+      input:
+        additionalProperties: true
+        type: object
+      logs:
+        items:
+          type: string
+        type: array
+      node_id:
+        type: string
+      node_name:
+        type: string
+      output:
+        additionalProperties: true
+        type: object
+      retry_count:
+        type: integer
+      start_time:
+        type: string
+      status:
+        $ref: '#/definitions/models.ExecutionStatus'
+    type: object
+  models.ExecutionStatus:
+    enum:
+    - pending
+    - running
+    - completed
+    - failed
+    - cancelled
+    - timeout
+    - archived
+    type: string
+    x-enum-comments:
+      ExecutionStatusArchived: 已归档
+      ExecutionStatusCancelled: 已取消
+      ExecutionStatusCompleted: 执行完成
+      ExecutionStatusFailed: 执行失败
+      ExecutionStatusPending: 等待执行
+      ExecutionStatusRunning: 正在执行
+      ExecutionStatusTimeout: 执行超时
+    x-enum-descriptions:
+    - 等待执行
+    - 正在执行
+    - 执行完成
+    - 执行失败
+    - 已取消
+    - 执行超时
+    - 已归档
+    x-enum-varnames:
+    - ExecutionStatusPending
+    - ExecutionStatusRunning
+    - ExecutionStatusCompleted
+    - ExecutionStatusFailed
+    - ExecutionStatusCancelled
+    - ExecutionStatusTimeout
+    - ExecutionStatusArchived
+  models.FilterRule:
+    properties:
+      field:
+        description: 字段名
+        type: string
+      logic:
+        description: 逻辑操作符
+        enum:
+        - and
+        - or
+        type: string
+      operator:
+        description: 操作符
+        enum:
+        - eq
+        - ne
+        - gt
+        - lt
+        - ge
+        - le
+        - in
+        - nin
+        - contains
+        type: string
+      value:
+        description: 比较值
+    required:
+    - field
+    type: object
+  models.InputConfig:
+    properties:
+      defaults:
+        additionalProperties: true
+        description: 默认值
+        type: object
+      mapping:
+        additionalProperties:
+          type: string
+        description: 输入映射
+        type: object
+      required:
+        description: 是否必需
+        items:
+          type: string
+        type: array
+      validation:
+        additionalProperties: true
+        description: 验证规则
+        type: object
+    type: object
+  models.LoopConfig:
+    properties:
+      concurrency:
+        description: 并发数
+        minimum: 1
+        type: integer
+      condition:
+        description: 循环条件
+        type: string
+      data:
+        description: 循环数据
+      max_iterations:
+        description: 最大迭代次数
+        minimum: 1
+        type: integer
+      parallel:
+        description: 并行执行
+        type: boolean
+      type:
+        description: 循环类型
+        enum:
+        - for
+        - while
+        - foreach
+        type: string
+      variable:
+        description: 循环变量
+        type: string
+    type: object
+  models.Node:
+    properties:
+      config:
+        allOf:
+        - $ref: '#/definitions/models.NodeConfig'
+        description: 配置字段
+      dependencies:
+        description: 依赖关系
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      execution:
+        allOf:
+        - $ref: '#/definitions/models.NodeExecution'
+        description: 执行信息
+      id:
+        description: 基础字段
+        type: string
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      plugin:
+        type: string
+      retry_count:
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/models.NodeStatusEnum'
+        description: 状态字段
+      type:
+        allOf:
+        - $ref: '#/definitions/models.NodeTypeEnum'
+        description: 类型和插件
+      ui_config:
+        additionalProperties: true
+        type: object
+    required:
+    - id
+    - name
+    - plugin
+    - type
+    type: object
+  models.NodeConfig:
+    properties:
+      condition_config:
+        allOf:
+        - $ref: '#/definitions/models.ConditionConfig'
+        description: 条件配置（用于条件节点）
+      description:
+        description: 描述
+        type: string
+      environment:
+        additionalProperties:
+          type: string
+        description: 环境变量
+        type: object
+      input_config:
+        allOf:
+        - $ref: '#/definitions/models.InputConfig'
+        description: 输入配置
+      loop_config:
+        allOf:
+        - $ref: '#/definitions/models.LoopConfig'
+        description: 循环配置（用于循环节点）
+      output_config:
+        allOf:
+        - $ref: '#/definitions/models.OutputConfig'
+        description: 输出配置
+      plugin_config:
+        additionalProperties: true
+        description: 插件配置
+        type: object
+      resource_config:
+        allOf:
+        - $ref: '#/definitions/models.ResourceConfig'
+        description: 资源配置
+      retry_config:
+        allOf:
+        - $ref: '#/definitions/models.NodeRetryConfig'
+        description: 重试配置
+      tags:
+        description: 标签
+        items:
+          type: string
+        type: array
+      timeout_config:
+        allOf:
+        - $ref: '#/definitions/models.TimeoutConfig'
+        description: 超时配置
+    type: object
+  models.NodeExecution:
+    properties:
+      duration:
+        description: '执行时长 (单位: 纳秒)'
+        type: integer
+      end_time:
+        description: 结束时间
+        type: string
+      error:
+        description: 错误信息
+        type: string
+      execution_id:
+        description: 执行ID
+        type: string
+      input_data:
+        additionalProperties: true
+        description: 输入数据
+        type: object
+      logs:
+        description: 日志
+        items:
+          type: string
+        type: array
+      metrics:
+        additionalProperties: true
+        description: 指标
+        type: object
+      output_data:
+        additionalProperties: true
+        description: 输出数据
+        type: object
+      retry_count:
+        description: 重试次数
+        type: integer
+      start_time:
+        description: 开始时间
+        type: string
+    type: object
+  models.NodeRetryConfig:
+    properties:
+      backoff_multiplier:
+        description: 退避倍数
+        minimum: 1
+        type: number
+      backoff_strategy:
+        description: 退避策略
+        enum:
+        - fixed
+        - linear
+        - exponential
+        type: string
+      max_retries:
+        description: 最大重试次数
+        maximum: 10
+        minimum: 0
+        type: integer
+      max_retry_interval:
+        description: '最大重试间隔 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+      retry_conditions:
+        description: 重试条件
+        items:
+          type: string
+        type: array
+      retry_interval:
+        description: '重试间隔 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+      stop_conditions:
+        description: 停止重试条件
+        items:
+          type: string
+        type: array
+    type: object
+  models.NodeStatusEnum:
+    enum:
+    - pending
+    - running
+    - completed
+    - failed
+    - skipped
+    - cancelled
+    - retrying
+    - inactive
+    type: string
+    x-enum-varnames:
+    - NodeStatusPending
+    - NodeStatusRunning
+    - NodeStatusCompleted
+    - NodeStatusFailed
+    - NodeStatusSkipped
+    - NodeStatusCancelled
+    - NodeStatusRetrying
+    - NodeStatusInactive
+  models.NodeTypeEnum:
+    enum:
+    - datasource
+    - transform
+    - output
+    - control
+    - condition
+    - loop
+    - subdag
+    - script
+    - api
+    - timer
+    type: string
+    x-enum-varnames:
+    - NodeTypeDataSource
+    - NodeTypeTransform
+    - NodeTypeOutput
+    - NodeTypeControl
+    - NodeTypeCondition
+    - NodeTypeLoop
+    - NodeTypeSubDAG
+    - NodeTypeScript
+    - NodeTypeAPI
+    - NodeTypeTimer
+  models.NotificationConfig:
+    properties:
+      channels:
+        items:
+          type: string
+        type: array
+      on_failure:
+        type: boolean
+      on_retry:
+        type: boolean
+      on_success:
+        type: boolean
+    type: object
+  models.OutputConfig:
+    properties:
+      filter:
+        description: 输出过滤
+        items:
+          type: string
+        type: array
+      format:
+        additionalProperties: true
+        description: 输出格式化
+        type: object
+      mapping:
+        additionalProperties:
+          type: string
+        description: 输出映射
+        type: object
+    type: object
+  models.ResourceConfig:
+    properties:
+      concurrency_limit:
+        description: 并发限制
+        minimum: 1
+        type: integer
+      cpu_limit:
+        description: CPU限制
+        type: string
+      disk_limit:
+        description: 磁盘限制
+        type: string
+      memory_limit:
+        description: 内存限制
+        type: string
+      network_limit:
+        description: 网络限制
+        type: string
+    type: object
+  models.ScheduleType:
+    enum:
+    - cron
+    - interval
+    - once
+    - manual
+    type: string
+    x-enum-comments:
+      ScheduleTypeCron: Cron 表达式调度
+      ScheduleTypeInterval: 间隔调度
+      ScheduleTypeManual: 手动调度
+      ScheduleTypeOnce: 一次性调度
+    x-enum-descriptions:
+    - Cron 表达式调度
+    - 间隔调度
+    - 一次性调度
+    - 手动调度
+    x-enum-varnames:
+    - ScheduleTypeCron
+    - ScheduleTypeInterval
+    - ScheduleTypeOnce
+    - ScheduleTypeManual
+  models.TimeoutConfig:
+    properties:
+      connection_timeout:
+        description: '连接超时 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+      execution_timeout:
+        description: '执行超时 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+      read_timeout:
+        description: '读取超时 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+      write_timeout:
+        description: '写入超时 (单位: 纳秒)'
+        minimum: 0
+        type: integer
+    type: object
+  models.TransformRule:
+    properties:
+      expression:
+        description: 转换表达式
+        type: string
+      field:
+        description: 字段名
+        type: string
+      parameters:
+        additionalProperties: true
+        description: 转换参数
+        type: object
+      type:
+        description: 转换类型
+        enum:
+        - format
+        - convert
+        - calculate
+        type: string
+    required:
+    - expression
+    - field
+    type: object
+  models.TriggerType:
+    enum:
+    - schedule
+    - manual
+    - api
+    - event
+    type: string
+    x-enum-comments:
+      TriggerTypeAPI: API触发
+      TriggerTypeEvent: 事件触发
+      TriggerTypeManual: 手动触发
+      TriggerTypeSchedule: 定时触发
+    x-enum-descriptions:
+    - 定时触发
+    - 手动触发
+    - API触发
+    - 事件触发
+    x-enum-varnames:
+    - TriggerTypeSchedule
+    - TriggerTypeManual
+    - TriggerTypeAPI
+    - TriggerTypeEvent
+  models.Workflow:
+    properties:
+      config:
+        $ref: '#/definitions/models.WorkflowConfig'
+      created_at:
+        type: string
+      created_by:
+        description: 创建信息
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      edges:
+        items:
+          $ref: '#/definitions/models.Edge'
+        type: array
+      id:
+        description: 基础字段
+        type: string
+      name:
+        type: string
+      nodes:
+        additionalProperties:
+          $ref: '#/definitions/models.Node'
+        type: object
+      priority:
+        type: integer
+      schedule:
+        $ref: '#/definitions/models.WorkflowSchedule'
+      statistics:
+        $ref: '#/definitions/models.WorkflowStatistics'
+      status:
+        allOf:
+        - $ref: '#/definitions/models.WorkflowStatus'
+        description: 统一状态管理
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+      version:
+        type: string
+    type: object
+  models.WorkflowConfig:
+    properties:
+      description:
+        type: string
+      max_concurrency:
+        maximum: 100
+        minimum: 1
+        type: integer
+      max_retries:
+        maximum: 10
+        minimum: 0
+        type: integer
+      notifications:
+        allOf:
+        - $ref: '#/definitions/models.NotificationConfig'
+        description: 通知配置
+      priority:
+        description: 其他配置
+        maximum: 10
+        minimum: 0
+        type: integer
+      timeout:
+        description: 执行配置
+        type: integer
+      variables:
+        additionalProperties: true
+        description: 变量配置
+        type: object
+    type: object
+  models.WorkflowSchedule:
+    properties:
+      cron_expression:
+        description: Cron 调度配置
+        type: string
+      enabled:
+        description: 调度控制
+        type: boolean
+      end_time:
+        type: string
+      execute_at:
+        description: 一次性调度配置
+        type: string
+      interval:
+        description: 间隔调度配置
+        type: integer
+      max_instances:
+        maximum: 10
+        minimum: 1
+        type: integer
+      missed_run_policy:
+        description: 错过执行策略
+        enum:
+        - skip
+        - run_once
+        type: string
+      start_time:
+        type: string
+      timezone:
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/models.ScheduleType'
+        description: 调度类型
+    required:
+    - timezone
+    - type
+    type: object
+  models.WorkflowStatistics:
+    properties:
+      average_exec_time:
+        type: integer
+      failed_runs:
+        type: integer
+      last_execution_time:
+        type: string
+      next_execution_time:
+        type: string
+      success_rate:
+        type: number
+      successful_runs:
+        type: integer
+      total_executions:
+        type: integer
+    type: object
+  models.WorkflowStatus:
+    enum:
+    - inactive
+    - active
+    - paused
+    - disabled
+    type: string
+    x-enum-comments:
+      WorkflowStatusActive: 已激活
+      WorkflowStatusDisabled: 已禁用
+      WorkflowStatusInactive: 未激活
+      WorkflowStatusPaused: 已暂停
+    x-enum-descriptions:
+    - 未激活
+    - 已激活
+    - 已暂停
+    - 已禁用
+    x-enum-varnames:
+    - WorkflowStatusInactive
+    - WorkflowStatusActive
+    - WorkflowStatusPaused
+    - WorkflowStatusDisabled
+  nodes.CategoryInfo:
+    properties:
+      category:
+        type: string
+      node_count:
+        type: integer
+    type: object
+  nodes.ConfigField:
+    properties:
+      data_source:
+        allOf:
+        - $ref: '#/definitions/nodes.DataSourceConfig'
+        description: 动态数据源配置（新增）
+      default: {}
+      description:
+        type: string
+      enum:
+        items: {}
+        type: array
+      items:
+        $ref: '#/definitions/nodes.ConfigField'
+      name:
+        description: 字段名称（新增）
+        type: string
+      placeholder:
+        type: string
+      properties:
+        items:
+          $ref: '#/definitions/nodes.ConfigField'
+        type: array
+      required:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      type:
+        type: string
+      widget:
+        description: 基础UI属性
+        type: string
+    type: object
+  nodes.ConfigSchema:
+    properties:
+      properties:
+        items:
+          $ref: '#/definitions/nodes.ConfigField'
+        type: array
+      required:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+    type: object
+  nodes.DataSourceConfig:
+    properties:
+      cache_time:
+        description: 缓存时间(秒)，0表示不缓存
+        type: integer
+      dependencies:
+        description: 依赖的其他配置字段
+        items:
+          type: string
+        type: array
+      fallback:
+        description: 获取失败时的fallback值
+      method:
+        description: 方法名，如"GetTableNames"
+        type: string
+      parameters:
+        additionalProperties: true
+        description: 方法参数配置
+        type: object
+      type:
+        description: '"method", "api", "static"'
+        type: string
+    type: object
+  nodes.DynamicDataResponse:
+    properties:
+      cached:
+        type: boolean
+      data: {}
+      error:
+        type: string
+      success:
+        type: boolean
+    type: object
+  nodes.NodeMetadata:
+    properties:
+      author:
+        description: 创建信息
+        type: string
+      category:
+        type: string
+      config_schema:
+        allOf:
+        - $ref: '#/definitions/nodes.ConfigSchema'
+        description: 配置定义
+      created_at:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        description: 基础信息
+        type: string
+      input_ports:
+        description: 输入输出定义
+        items:
+          $ref: '#/definitions/nodes.PortDefinition'
+        type: array
+      name:
+        type: string
+      output_ports:
+        items:
+          $ref: '#/definitions/nodes.PortDefinition'
+        type: array
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+      updated_at:
+        type: string
+      version:
+        type: string
+    type: object
+  nodes.PortDefinition:
+    properties:
+      data_type:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      multiple:
+        type: boolean
+      name:
+        type: string
+      required:
+        type: boolean
+    type: object
+  nodes.TypeInfo:
+    properties:
+      node_count:
+        type: integer
+      type:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: 流程服务，提供流程编排、执行、调度功能
+  title: 流程服务 API
+  version: "1.0"
+paths:
+  /executions:
+    get:
+      description: 分页列出执行记录
+      parameters:
+      - description: 工作流ID筛选
+        in: query
+        name: workflow_id
+        type: string
+      - description: 状态筛选
+        in: query
+        name: status
+        type: string
+      - description: 页码，默认1
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小，默认10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.PaginatedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 列出执行记录
+      tags:
+      - executions
+  /executions/{id}:
+    get:
+      description: 根据ID获取执行记录详情
+      parameters:
+      - description: 执行ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Execution'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 获取执行记录
+      tags:
+      - executions
+  /executions/{id}/cancel:
+    post:
+      description: 取消指定的执行
+      parameters:
+      - description: 执行ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 取消执行
+      tags:
+      - executions
+  /executions/{id}/progress:
+    get:
+      description: 获取执行的当前进度
+      parameters:
+      - description: 执行ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.ProgressResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 获取执行进度
+      tags:
+      - executions
+  /executions/{id}/retry:
+    post:
+      description: 重试失败的执行
+      parameters:
+      - description: 执行ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Execution'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 重试执行
+      tags:
+      - executions
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: 检查服务健康状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 健康状态
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 健康检查
+      tags:
+      - 系统监控
+  /info:
+    get:
+      consumes:
+      - application/json
+      description: 获取服务的基本信息和运行状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 系统信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 获取系统信息
+      tags:
+      - 系统监控
+  /live:
+    get:
+      consumes:
+      - application/json
+      description: 检查服务是否存活
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 服务存活
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 存活检查
+      tags:
+      - 系统监控
+  /metrics:
+    get:
+      consumes:
+      - application/json
+      description: 获取服务的性能指标和统计信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 监控指标
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 获取监控指标
+      tags:
+      - 系统监控
+  /nodes:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统中注册的所有节点的完整信息，包括元数据和配置模式
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.NodesListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 获取所有节点完整信息
+      tags:
+      - nodes
+  /nodes/{id}/dynamic-data:
+    post:
+      consumes:
+      - application/json
+      description: 获取指定节点的动态配置数据，如数据库表名、列名等
+      parameters:
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 方法名
+        in: query
+        name: method
+        required: true
+        type: string
+      - description: 方法参数
+        in: body
+        name: request
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/nodes.DynamicDataResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 获取节点动态配置数据
+      tags:
+      - nodes
+  /nodes/{id}/validate:
+    post:
+      consumes:
+      - application/json
+      description: 验证指定节点的配置是否正确
+      parameters:
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 节点配置
+        in: body
+        name: config
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.ValidationResult'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 验证节点配置
+      tags:
+      - nodes
+  /ready:
+    get:
+      consumes:
+      - application/json
+      description: 检查服务是否准备好接收请求
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 服务就绪
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 就绪检查
+      tags:
+      - 系统监控
+  /version:
+    get:
+      consumes:
+      - application/json
+      description: 获取服务的版本和构建信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 版本信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 获取版本信息
+      tags:
+      - 系统监控
+  /workflows:
+    get:
+      description: 分页列出工作流
+      parameters:
+      - description: 页码，默认1
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小，默认10
+        in: query
+        name: page_size
+        type: integer
+      - description: 状态筛选
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.PaginatedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 列出工作流
+      tags:
+      - workflows
+    post:
+      consumes:
+      - application/json
+      description: 创建新的工作流定义
+      parameters:
+      - description: 工作流定义
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/models.Workflow'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Workflow'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 创建工作流
+      tags:
+      - workflows
+  /workflows/{id}:
+    delete:
+      description: 删除指定的工作流
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 删除工作流
+      tags:
+      - workflows
+    get:
+      description: 根据ID获取工作流详情
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Workflow'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 获取工作流
+      tags:
+      - workflows
+    put:
+      consumes:
+      - application/json
+      description: 更新工作流定义
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 工作流定义
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/models.Workflow'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Workflow'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 更新工作流
+      tags:
+      - workflows
+  /workflows/{id}/activate:
+    post:
+      description: 激活指定的工作流
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 激活工作流
+      tags:
+      - workflows
+  /workflows/{id}/deactivate:
+    post:
+      description: 停用指定的工作流
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 停用工作流
+      tags:
+      - workflows
+  /workflows/{id}/pause:
+    post:
+      description: 暂停指定的工作流
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 暂停工作流
+      tags:
+      - workflows
+  /workflows/{id}/resume:
+    post:
+      description: 恢复指定的工作流
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 恢复工作流
+      tags:
+      - workflows
+  /workflows/{id}/statistics:
+    get:
+      description: 获取工作流的统计信息
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.WorkflowStatistics'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 获取工作流统计信息
+      tags:
+      - workflows
+  /workflows/{id}/trigger:
+    post:
+      consumes:
+      - application/json
+      description: 手动触发工作流执行
+      parameters:
+      - description: 工作流ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 触发执行请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.TriggerExecutionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Execution'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.APIResponse'
+      summary: 触发工作流执行
+      tags:
+      - executions
+swagger: "2.0"
