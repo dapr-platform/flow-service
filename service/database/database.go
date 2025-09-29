@@ -101,7 +101,7 @@ func InitDatabaseWithConfig(config *DatabaseConfig) error {
 	// 构建DSN连接字符串
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s search_path=%s TimeZone=Asia/Shanghai",
 		config.Host, config.Port, config.Username, config.Password, config.Database, config.SSLMode, config.Schema)
-
+	fmt.Println("dsn", dsn)
 	// 配置GORM日志级别
 	logLevel := logger.Info
 	switch config.LogLevel {
