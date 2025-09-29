@@ -99,7 +99,7 @@ func InitDatabase() error {
 // InitDatabaseWithConfig 使用指定配置初始化数据库连接
 func InitDatabaseWithConfig(config *DatabaseConfig) error {
 	// 构建DSN连接字符串
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s search_path=%s TimeZone=Asia/Shanghai",
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s search_path=%s TimeZone=UTC",
 		config.Host, config.Port, config.Username, config.Password, config.Database, config.SSLMode, config.Schema)
 	fmt.Println("dsn", dsn)
 	// 配置GORM日志级别
